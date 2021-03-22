@@ -40,6 +40,7 @@ type alias Model =
     , hoveredGroup : Maybe String
     , serverInput : Maybe String
     , servers : Api.Servers
+    , activeServer : Maybe String
     , serversModalOpen : Bool
     , page : Page
     , apiData : Api.Data
@@ -122,6 +123,7 @@ init flags url key =
             , hoveredGroup = Nothing
             , serverInput = Nothing
             , servers = servers
+            , activeServer = Nothing
             , serversModalOpen = False
             , page = NotFound
             , apiData = RemoteData.Loading
@@ -265,7 +267,7 @@ viewApis model apis =
 
 
 viewNav : Api.Apis -> Model -> Html Msg
-viewNav apis { burger, page, hoveredGroup, serversModalOpen } =
+viewNav apis { burger, hoveredGroup, serversModalOpen } =
     let
         burgerAttrs =
             [ href "#"
@@ -334,7 +336,7 @@ viewPage model =
                             acc
                     )
                     ( "", "" )
-                |> Tuple.mapSecond (Components.apiDoc model.servers)
+                |> Tuple.mapSecond (Components.apiDoc model.activeServer)
 
         NotFound ->
             ( "not found", text "" )

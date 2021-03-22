@@ -147,10 +147,6 @@ type alias ServersModal msg =
 
 serversModal : ServersModal msg -> Html msg
 serversModal m =
-    let
-        serversBlocks =
-            List.map serverField m.servers
-    in
     div
         [ class "modal", activate m.active ]
         [ div [ class "modal-background", onClick m.modalClosed ] []
@@ -173,8 +169,7 @@ serversModal m =
                 ]
             , Html.section
                 [ class "modal-card-body" ]
-                [ addServerField m.inputValue m.inputChanged
-                , div
+                [ div
                     [ class "field is-horizontal" ]
                     [ div
                         [ class "field-label is-normal" ]
@@ -183,9 +178,13 @@ serversModal m =
                         [ class "field-body" ]
                         [ div
                             [ class "field" ]
-                            (List.map serverField m.servers)
+                            [ div
+                                [ class "control" ]
+                                [ serverSelect m.servers ]
+                            ]
                         ]
                     ]
+                , addServerField m.inputValue m.inputChanged
                 ]
             , Html.footer
                 [ class "modal-card-foot" ]
@@ -222,11 +221,6 @@ addServerField currentVal changed =
 serversButtons : msg -> List (Html msg)
 serversButtons cleared =
     [ Html.button
-        [ class "button is-primary"
-        , Attr.type_ "submit"
-        ]
-        [ text "Add" ]
-    , Html.button
         [ class "button is-danger is-outlined"
         , role "button"
         , Attr.type_ "button"
@@ -236,19 +230,17 @@ serversButtons cleared =
     ]
 
 
-serverField : String -> Html msg
-serverField url =
+serverSelect : List String -> Html msg
+serverSelect servers =
+    let
+        opt u =
+            Html.option [ Attr.value u ] [ text u ]
+    in
     div
-        [ class "control has-icons-left" ]
-        [ Html.input
-            [ class "input is-static"
-            , attribute "readonly" ""
-            , Attr.value url
-            ]
+        [ class "select" ]
+        [ Html.select
             []
-        , Html.span
-            [ class "icon is-left" ]
-            [ text "🖥" ]
+            (List.map opt servers)
         ]
 
 
@@ -303,16 +295,16 @@ deadEndsToString deadEnds =
 -- DOC
 
 
-apiDoc : Api.Servers -> String -> Html msg
-apiDoc servers api =
+apiDoc : Maybe String -> String -> Html msg
+apiDoc url api =
     let
-        urls =
-            List.map (attribute "server-url") servers
+        urlAttr s =
+            [ attribute "server-url" s ]
 
         attrs =
-            (api ++ ".yaml" |> attribute "spec-url")
+            ("/" ++ Api.directory ++ api ++ ".yaml" |> attribute "spec-url")
                 :: attribute "show-header" "false"
-                :: attribute "theme" "dark"
-                :: urls
+                :: Maybe.withDefault [] (Maybe.map urlAttr url)
     in
-    Html.node "rapi-doc" attrs []
+    Html.node
+        "rapi-doc" attrs []

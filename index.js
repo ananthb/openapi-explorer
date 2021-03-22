@@ -1,4 +1,4 @@
-import Elm from "./src/Main.elm";
+import { Elm } from "./src/Main.elm";
 import "rapidoc";
 
 const serversKey = "servers";

@@ -5,6 +5,7 @@ port module Api exposing
     , IndexData
     , Servers
     , apisDecoder
+    , directory
     , dropExtension
     , getApis
     , getIndex
@@ -16,6 +17,15 @@ port module Api exposing
 import Http
 import Json.Decode as Decode exposing (Decoder, field, string)
 import RemoteData
+
+
+
+{- APIs directory -}
+
+
+directory : String
+directory =
+    "apis"
 
 
 dropExtension : String -> String
@@ -66,7 +76,7 @@ type alias Data =
 getApis : (Data -> msg) -> Cmd msg
 getApis got =
     Http.get
-        { url = "/apis.json"
+        { url = directory ++ "/index.json"
         , expect =
             Http.expectJson
                 (RemoteData.fromResult >> got)
@@ -134,7 +144,7 @@ getIndex : String -> (IndexData -> msg) -> Cmd msg
 getIndex idx gotIdx =
     let
         indexFile =
-            "README.md"
+            directory ++ "/README.md"
     in
     Http.get
         { url =
