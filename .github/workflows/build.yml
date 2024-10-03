@@ -24,7 +24,7 @@ jobs:
           yarn install --dev
           yarn build
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: openapi-explorer
           path: public
