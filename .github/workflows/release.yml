@@ -8,14 +8,19 @@ on:
 jobs:
   build_zip:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '16.9.1'
           cache: 'yarn'
+
       - name: Build
         env:
           version: ${{ github.ref_name }}
@@ -23,6 +28,7 @@ jobs:
           yarn install --dev
           yarn build
           zip -r openapi-explorer_${version}.zip public
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
